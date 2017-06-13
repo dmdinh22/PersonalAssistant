@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Tasks</h2>
+
+<div ng-controller="tasksController as tskCtrl" ng-cloak>
+    <form ng-submit="tskCtrl.addTask()">
+        <input ng-model="tskCtrl.item" /> <button class="btn btn-sm btn-primary">Add</button>
+    </form>
+        <ul>
+            <li ng-repeat="item in tskCtrl.tasks track by $index">{{item}} <button ng-click="tskCtrl.deleteTask()">x</button></li>
+        </ul>
+
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            angular.module('jarvisApp')
+                .controller('tasksController', TasksController);
+
+            TasksController.$inject = ['$scope'];
+
+            function TasksController($scope) {
+                var vm = this;
+
+                vm.$scope = $scope;
+
+                vm.tasks = [];
+                vm.item = null;
+
+                vm.addTask = _addTask;
+
+                vm.getTasks = _getTasks;
+                vm.deleteTask = _deleteTask;
+
+                // ---THE FOLD --
+                render();
+
+                function render() {
+                    console.log("rendering...")
+
+                    return vm.getTasks();
+                }
+
+                function _addTask() {
+                    vm.tasks.push(vm.item);
+                }
+
+                function _getTasks() {
+                    console.log("getting tasks...")
+
+                    vm.tasks = ["Apply for jobs"
+                               , "Work on application"]
+                }
+
+                function _deleteTask() {
+                    vm.tasks.splice(this.$index, 1);
+                }
+
+
+            }
+
+        })();
+
+    </script>
+    
+    }
