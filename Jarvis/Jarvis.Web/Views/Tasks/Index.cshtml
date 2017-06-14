@@ -11,7 +11,7 @@
         <input ng-model="tskCtrl.item" /> <button class="btn btn-sm btn-primary">Add</button>
     </form>
         <ul>
-            <li ng-repeat="item in tskCtrl.tasks track by $index">{{item}} <button ng-click="tskCtrl.deleteTask()">x</button></li>
+            <li ng-repeat="item in tskCtrl.tasks track by $index">{{item}} <a class="fa fa-pencil-square-o" aria-hidden="true" ng-click="tskCtrl.editTask()"></a><a class="fa fa-times" aria-hidden="true" ng-click="tskCtrl.deleteTask()"></a></li>
         </ul>
 
 </div>
@@ -35,6 +35,7 @@
                 vm.addTask = _addTask;
 
                 vm.getTasks = _getTasks;
+                vm.editTask = _editTask;
                 vm.deleteTask = _deleteTask;
 
                 // ---THE FOLD --
@@ -55,6 +56,10 @@
 
                     vm.tasks = ["Apply for jobs"
                                , "Work on application"]
+                }
+
+                function _editTask() {
+                    console.log("editing task...")
                 }
 
                 function _deleteTask() {
