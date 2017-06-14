@@ -7,13 +7,22 @@
 <h2>Manage Contacts</h2>
 
 <div class="col-md-12" ng-controller="contactsController as cntCtrl">
-    <form ng-form="cntCtrl.submit">
-        <label ng-model="cntCtrl.id"></label>
-        <label for="firstName">First Name:</label>
-        <input type="text" ng-model="cntCtrl.firstName" />
-        <label for="lastName">Last Name:</label>
-        <input type="text" ng-model="cntCtrl.lastName" />
-        <button type="submit">Submit</button>
+    <form class="form-control">
+        <label ng-model="cntCtrl.person.id"></label>
+        <div for="firstName">First Name:</div>
+        <input type="text" class="form-control" ng-model="cntCtrl.person.firstName" />
+        <br />
+        <div for="lastName">Last Name:</div>
+        <input type="text" class="form-control" ng-model="cntCtrl.person.lastName" />
+        <br />
+        <div for="phoneNumber">Phone Number:</div>
+        <input type="text" class="form-control" ng-model="cntCtrl.person.phoneNumber" />
+        <br />
+        <div for="email">Email:</div>
+        <input type="text" class="form-control" ng-model="cntCtrl.person.email" />
+        <br />
+        <br />
+        <button type="submit" class="btn btn-default btn-info" ng-click="cntCtrl.submit()">Submit</button>
     </form>
 </div>
 
@@ -43,8 +52,8 @@
                     return response.data;
                 }
 
-                function onError() {
-                    console.log("ERROR!");
+                function onError(e) {
+                    console.log("ERROR!", e);
                     alert("YOU FUCKED UP!")
                 }
             }
@@ -76,13 +85,13 @@
                 //-- THE FOLD --
                 
 
-                function _submit(vm.person) {
+                function _submit() {
                     console.log("submitting form...");
                     return vm.addPerson(vm.person)
                         .then(addPersonSuccess);
                 }
 
-                function _addPerson() {
+                function _addPerson(data) {
                     console.log("getting all contacts...")
 
                     return $contactService.addPeople(data)
