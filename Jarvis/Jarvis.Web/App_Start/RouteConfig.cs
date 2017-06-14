@@ -13,6 +13,9 @@ namespace Jarvis.Web
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapMvcAttributeRoutes();
+
+            // direct way to route
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

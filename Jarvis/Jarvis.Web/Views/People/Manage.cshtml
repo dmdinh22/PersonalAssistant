@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "Manage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Manage Contacts</h2>
+
+<div class="col-md-12" ng-controller="contactsController as cntCtrl">
+    <form ng-form="cntCtrl.submit">
+        <label ng-model="cntCtrl.id"></label>
+        <label for="firstName">First Name:</label>
+        <input type="text" ng-model="cntCtrl.firstName" />
+        <label for="lastName">Last Name:</label>
+        <input type="text" ng-model="cntCtrl.lastName" />
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            angular.module('jarvisApp')
+                .factory("$contactService", $ContactService);
+
+            $ContactService.$inject = ['$http'];
+
+            function $ContactService($http) {
+
+                return {
+                    addPeople: _addPeople
+                }
+
+                function _addPeople(data) {
+                    console.log("getting data from db...");
+                    return $http.post('/api/people', data)
+                        .then(addPeopleSuccess)
+                        .catch(onError);
+                }
+
+                function addPeopleSuccess(response) {
+                    console.log("successfully get response from addPeople");
+                    return response.data;
+                }
+
+                function onError() {
+                    console.log("ERROR!");
+                    alert("YOU FUCKED UP!")
+                }
+            }
+
+        })();
+
+</script>    
+
+    <script>
+        (function () {
+            angular.module('jarvisApp')
+                .controller('contactsController', ContactsController);
+
+            ContactsController.$inject = ['$scope', '$contactService'];
+
+            function ContactsController($scope, $contactService) {
+                var vm = this;
+
+                vm.$scope = $scope;
+                vm.$contactService = $contactService;
+
+                vm.person = null
+                vm.id = 0;
+
+                //hoisted functions
+                vm.addPerson = _addPerson;
+                vm.submit = _submit;
+
+                //-- THE FOLD --
+                
+
+                function _submit(vm.person) {
+                    console.log("submitting form...");
+                    return vm.addPerson(vm.person)
+                        .then(addPersonSuccess);
+                }
+
+                function _addPerson() {
+                    console.log("getting all contacts...")
+
+                    return $contactService.addPeople(data)
+                        .then(getPKId);
+                }
+
+                function getPKId(data) {
+                    console.log("filling person data...")
+                    vm.id = data;
+                }
+
+                function addPersonSuccess() {
+                    console.log("completed render and adding person!!");
+                    window.location = "/people/index";
+                }
+            }
+        })();
+    </script>
+    }
