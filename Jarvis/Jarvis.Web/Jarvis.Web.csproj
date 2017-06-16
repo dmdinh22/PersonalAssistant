@@ -45,10 +45,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="RouteDebugger, Version=2.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\routedebugger.2.1.5\lib\net40\RouteDebugger.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -211,6 +217,11 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Responses\BaseResponse.cs" />
+    <Compile Include="Models\Responses\ErrorResponse.cs" />
+    <Compile Include="Models\Responses\ItemResponse.cs" />
+    <Compile Include="Models\Responses\ItemsResponse.cs" />
+    <Compile Include="Models\Responses\SuccessResponse.cs" />
     <Compile Include="Models\ViewModels\ItemViewModel.cs" />
     <Compile Include="Models\ViewModels\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -302,7 +313,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\Responses\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

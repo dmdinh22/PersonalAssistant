@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace Jarvis.Web.Services
 {
-    public class PeopleService
+    public class PeopleService : BaseService
     {
         public List<Person> GetPeople()
         {
@@ -139,7 +139,7 @@ namespace Jarvis.Web.Services
                     cmd.ExecuteNonQuery();
                 }
             }
-        }
+        } //UpdatePerson
 
         public void DeletePerson(int id)
         {

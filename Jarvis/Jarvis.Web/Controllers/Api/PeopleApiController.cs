@@ -1,4 +1,5 @@
-﻿using Jarvis.Web.Models.ViewModels;
+﻿using Jarvis.Web.Models.Responses;
+using Jarvis.Web.Models.ViewModels;
 using Jarvis.Web.Services;
 using System.Collections.Generic;
 using System.Net;
@@ -32,9 +33,11 @@ namespace Jarvis.Web.Controllers.Api
         [HttpPost]
         public HttpResponseMessage CreatePerson(Person payload)
         {
+            ItemResponse<int> response = new ItemResponse<int>();
             PeopleService peopleSvc = new PeopleService();
-            int id = peopleSvc.CreatePerson(payload);
-            return Request.CreateResponse(HttpStatusCode.OK, id);
+
+            response.Item = peopleSvc.CreatePerson(payload);
+            return Request.CreateResponse(response);
         } //CreatePerson
 
         [Route("{id:int}")]
