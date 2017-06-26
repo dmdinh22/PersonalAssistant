@@ -6,6 +6,13 @@ namespace Jarvis.Web.Services
 {
     public class PeopleService : BaseService
     {
+
+
+
+        /// <summary>
+        /// Below is Legacy Code
+        /// </summary>
+        #region Legacy ADO.NET Code
         public List<Person> GetPeople()
         {
             List<Person> peopleList = new List<Person>();
@@ -35,7 +42,6 @@ namespace Jarvis.Web.Services
 
                         peopleList.Add(p);
                     }
-
                 }
             }
             return peopleList;
@@ -75,13 +81,12 @@ namespace Jarvis.Web.Services
                             row = p;
                         }
                     }
-
                 }
             }
             return row;
         } //GetPersonById
 
-        public int CreatePerson(Person payload)
+        public int CreatePerson(PersonAddRequest payload)
         {
 
             int idOutput = 0;
@@ -119,7 +124,7 @@ namespace Jarvis.Web.Services
             return idOutput;
         } //CreatePerson
 
-        public void UpdatePerson(Person payload)
+        public void UpdatePerson(PersonUpdateRequest payload)
         {
             string connString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
@@ -158,5 +163,7 @@ namespace Jarvis.Web.Services
                 }
             }
         } //DeletePerson
+
+        #endregion
     }
 }

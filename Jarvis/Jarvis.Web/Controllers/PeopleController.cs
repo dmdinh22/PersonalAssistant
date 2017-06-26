@@ -1,4 +1,5 @@
 ﻿using Jarvis.Web.Models.ViewModels;
+using System.Configuration;
 using System.Web.Mvc;
 
 namespace Jarvis.Web.Controllers
@@ -7,9 +8,10 @@ namespace Jarvis.Web.Controllers
     public class PeopleController : Controller
     {
         // GET: People
-        public ActionResult Index()
+        public ActionResult Index() //BaseViewModel model
         {
-            return View();
+            //var apiKey = ConfigurationManager.AppSettings["GoogleMapsApiKey"];
+            return View(); //(model)
         }
 
         [Route("{id:int}/edit")]

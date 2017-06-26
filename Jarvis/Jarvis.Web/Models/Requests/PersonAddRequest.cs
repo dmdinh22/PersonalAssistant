@@ -5,9 +5,8 @@ using System.Web;
 
 namespace Jarvis.Web.Models.ViewModels
 {
-    public class Person : BaseViewModel
+    public class PersonAddRequest
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }

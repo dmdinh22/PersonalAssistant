@@ -22,7 +22,7 @@ namespace Jarvis.Web.Controllers.Api
 
         [Route("{id:int}")]
         [HttpGet]
-        public HttpResponseMessage GetPersonById([FromUri] int id, Person payload)
+        public HttpResponseMessage GetPersonById([FromUri] int id, PersonAddRequest payload)
         {
             PeopleService peopleSvc = new PeopleService();
             Person person = peopleSvc.GetPersonById(id);
@@ -31,7 +31,7 @@ namespace Jarvis.Web.Controllers.Api
 
         [Route]
         [HttpPost]
-        public HttpResponseMessage CreatePerson(Person payload)
+        public HttpResponseMessage CreatePerson(PersonAddRequest payload)
         {
             ItemResponse<int> response = new ItemResponse<int>();
             PeopleService peopleSvc = new PeopleService();
@@ -42,13 +42,15 @@ namespace Jarvis.Web.Controllers.Api
 
         [Route("{id:int}")]
         [HttpPut]
-        public HttpResponseMessage UpdatePerson([FromUri] int id, [FromBody] Person payload)
+        public HttpResponseMessage UpdatePerson([FromUri] int id, [FromBody] PersonUpdateRequest payload)
         {
+            SuccessResponse response = new SuccessResponse();
+
             PeopleService peopleSvc = new PeopleService();
 
             peopleSvc.UpdatePerson(payload);
 
-            return Request.CreateResponse(HttpStatusCode.OK, payload);
+            return Request.CreateResponse(response);
         }
 
         [Route("{id:int}")]

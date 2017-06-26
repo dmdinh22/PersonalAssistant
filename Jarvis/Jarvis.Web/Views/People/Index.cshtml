@@ -1,10 +1,49 @@
-﻿
+﻿@model Jarvis.Web.Models.ViewModels.ItemViewModel<int?>
+
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Address Book</h2>
+
+<style>
+    /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+    #map {
+        height: 300px;
+        width: 75%;
+        background-color: grey;
+    }
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+    }
+</style>
+
+<div class="container" id="googleMaps">
+    <div id="floating-panel">
+        <input id="address" type="text" value="Disneyland">
+        <input id="submit" type="button" value="Search">
+    </div>
+    <div id="map"></div>
+</div> <!--googleMaps-->
 
 <div class="col-lg-12" ng-controller="contactsController as cntCtrl">
     <br />
@@ -26,21 +65,39 @@
         <tbody>
             <tr ng-repeat="person in cntCtrl.people">
                 @*<td>{{person.id}}</td>*@
-                <td>{{person.firstName}}</td>
-                <td>{{person.lastName}}</td>
-                <td>{{person.phoneNumber}}</td>
-                <td>{{person.email}}</td>
-                <td>120 Newport Center Dr., 
-                    <br /> Newport Beach, CA 92660</td>
                 <td>
-                    <a class="fa fa-pencil-square-o" aria-hidden="true" ng-click="tskCtrl.editTask()"></a>
-                    <a class="fa fa-times" aria-hidden="true" ng-click="tskCtrl.deleteTask()"></a>
+                    <div ng-if="!person.edit">{{person.firstName}}</div>
+                    <input type="text" class="form-control" ng-model="person.firstName" ng-if="person.edit" />
                 </td>
-          
+                <td>
+                    <div ng-if="!person.edit">{{person.lastName}}</div>
+                    <input type="text" class="form-control" ng-model="person.lastName" ng-if="person.edit" />
+                </td>
+                <td>
+                    <div ng-if="!person.edit">{{person.phoneNumber}}</div>
+                    <input type="text" class="form-control" ng-model="person.phoneNumber" ng-if="person.edit" />
+                </td>
+                <td>
+                    <div ng-if="!person.edit">{{person.email}}</div>
+                    <input type="text" class="form-control" ng-model="person.email" ng-if="person.edit" />
+                </td>
+                <td>
+                    120 Newport Center Dr.,
+                    <br /> Newport Beach, CA 92660
+                </td>
+                <td>
+                    <div ng-if="!person.edit">
+                        <a class="fa fa-pencil-square-o" aria-hidden="true" ng-click="cntCtrl.editPerson(person)"></a>
+                        <a class="fa fa-times" aria-hidden="true" ng-click="cntCtrl.deletePerson(person)"></a>
+                    </div>
+                    <div ng-if="person.edit">
+                        <button class="btn btn-sm btn-primary" ng-click="cntCtrl.save(person)">Save</button>
+                        <button class="btn btn-sm btn-secondary" ng-click="cntCtrl.cancel(person)">Cancel</button>
+                    </div>
+                </td>
             </tr>
         </tbody>
-    </table> 
-
+    </table>
 </div>
 
 @section scripts {
@@ -54,7 +111,9 @@
             function $ContactServiceFactory($http) {
 
                 return {
-                    getPeople: _getPeople
+                    getPeople: _getPeople,
+                    updatePerson: _updatePerson,
+                    deletePerson: _deletePerson
                 }
 
                 function _getPeople() {
@@ -62,17 +121,43 @@
                     return $http.get('/api/people')
                         .then(getPeopleSuccess)
                         .catch(onError);
-                }
+                } //_getPeople
 
                 function getPeopleSuccess(response) {
                     console.log("successfully retrieved data");
                     return response.data;
-                }
+                } //getPeopleSuccess
 
                 function onError() {
                     console.log("ERROR!");
                     alert("YOU FUCKED UP!")
-                }
+                } //onError
+
+                function _updatePerson(id, data) {
+                    console.log("updating person data");
+                    console.log("data:", data);
+                    return $http.put('/api/people/' + id, data)
+                        .then(updatePersonSuccess)
+                        .catch(onError);
+                } //_editPerson
+
+                function updatePersonSuccess(response) {
+                    console.log("successfully updated person")
+                    return response;
+                } //updatePersonSuccess
+
+                function _deletePerson(id) {
+                    console.log("deleting person from db...")
+                    return $http.delete('/api/people/' + id)
+                        .then(deletePersonSuccess)
+                        .catch(onError);
+                } //_deletePeople
+
+                function deletePersonSuccess(response) {
+                    console.log("successfully deleted person")
+                    return response;
+                } //deletePersonSuccess
+
             }
 
         })();
@@ -89,46 +174,168 @@
                 vm.$scope = $scope;
                 vm.$contactServiceFactory = $contactServiceFactory;
 
+                vm.person = null;
                 vm.people = null;
+                vm.selectedPerson = null;
+                vm.cachePerson = [];
 
                 //hoisted functions
                 vm.getPeople = _getPeople;
                 vm.addPerson = _addPerson;
+
+                vm.editPerson = _editPerson;
+                vm.editPersonSuccess = _editPersonSuccess;
+
+                vm.deletePerson = _deletePerson;
+                vm.deletePersonSuccess = _deletePersonSuccess;
+
+                vm.currentLine = null;
+                vm.cancel = _cancel;
+                vm.save = _save;
+
 
                 //-- THE FOLD --
                 render();
 
                 function render() {
                     console.log("rendering...");
+
                     return vm.getPeople()
                         .then(getPeopleSuccess);
-                }
+                } //render
 
                 function _getPeople() {
                     console.log("getting all contacts...")
 
                     return $contactServiceFactory.getPeople()
                         .then(retrievePeople);
-                }
+                } //_getPeople
 
                 function retrievePeople(data) {
                     console.log("retrieve people data..")
                     vm.people = data;
-                }
+                } //retrievePeople
 
                 function getPeopleSuccess() {
                     console.log("completed render and retrieving people data")
-                }
+                } //getPeopleSuccess
 
                 function _addPerson() {
                     window.location = "/people/create"
-                }
-            }
+                } //_addPerson
 
+                function _editPerson(person) {
+                    vm.currentLine = person;
+                    person.edit = true;
+                    vm.cachePerson = angular.copy(person);
+                } //_editPerson
+
+                function _cancel(person) {
+                    angular.merge(person, vm.cachePerson);
+                    person.edit = false;
+                } //_cancel
+
+                function _save(person) {
+                    console.log("saving edit...")
+
+                    person.edit = false;
+
+                    return $contactServiceFactory.updatePerson(person.id, person)
+                        .then(vm.editPersonSuccess);           
+                } //_save
+
+                function _editPersonSuccess(data, textStatus, jqXHR) {
+                    console.log("Update success!")
+                } //_editPersonSuccess
+
+                function _deletePerson(person) {
+                    console.log("deleting contact")
+                    var index = vm.people.indexOf(person);
+                    var peopleArray = vm.people;
+
+                    peopleArray.splice(index, 1);
+                    return $contactServiceFactory.deletePerson(person.id)
+                        .then(vm.deletePersonSuccess);
+
+                } //_deletePerson
+
+                function _deletePersonSuccess(data, textStatus, jqXHR) {
+                    console.log("Deleted person successfully.");
+                } //_deletePersonSuccess
+
+
+            }
 
         })();
     </script>
-    
-    
-    
-    }
+
+    <script>
+        // Note: This example requires that you consent to location sharing when
+        // prompted by your browser. If you see the error "The Geolocation service
+        // failed.", it means you probably did not give permission for the browser to
+        // locate you.
+        var map, infoWindow;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 10
+            });
+            infoWindow = new google.maps.InfoWindow;
+
+            var geocoder = new google.maps.Geocoder();
+
+            document.getElementById('submit').addEventListener('click', function () {
+                geocodeAddress(geocoder, map);
+            });
+
+            function geocodeAddress(geocoder, resultsMap) {
+                var address = document.getElementById('address').value;
+                console.log('address', address);
+                geocoder.geocode({ 'address': address }, function (results, status) {
+                    if (status === 'OK') {
+                        resultsMap.setCenter(results[0].geometry.location);
+                        var marker = new google.maps.Marker({
+                            map: resultsMap,
+                            position: results[0].geometry.location
+                        });
+                    } else {
+                        alert('Geocode was not successful for the following reason: ' + status);
+                    }
+                }); //geocodeAddress
+            }
+
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    infoWindow.setPosition(pos);
+                    infoWindow.setContent('Current location.');
+                    infoWindow.open(map);
+                    map.setCenter(pos);
+                }, function () {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, infoWindow, map.getCenter());
+            }
+        }
+
+        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+            infoWindow.open(map);
+        } //handleLocationError
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxkdb8sKdGEo-kVm4jHfYjX6QC56nKfwc&callback=initMap"
+            type="text/javascript">
+    </script>
+
+}

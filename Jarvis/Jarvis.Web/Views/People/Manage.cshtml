@@ -33,7 +33,7 @@
             angular.module('jarvisApp')
                 .factory("$contactServiceFactory", $ContactServiceFactory);
 
-            $ContactService.$inject = ['$http'];
+            $ContactServiceFactory.$inject = ['$http'];
 
             function $ContactServiceFactory($http) {
 
